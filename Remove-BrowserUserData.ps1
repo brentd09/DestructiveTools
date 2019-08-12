@@ -7,6 +7,9 @@
   It will then attempt to remove all of the user data from the chosen browser/s.
   This script will choose all three browsers if none are chosen from the BrowserType
   parameter.
+.Parameter BrowserType
+  This parameter has three options Chrome, Firefox and IExplore. These can be entered 
+  as an array seperated by commas as per the examples in this help.  
 .EXAMPLE
   Remove-BrowserUserData 
   Deletes the user data from Chrome, Firefox and IE (the default targets all three browsers)
