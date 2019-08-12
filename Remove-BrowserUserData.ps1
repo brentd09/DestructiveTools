@@ -34,19 +34,17 @@ Write-host "`n`n`n"
 if ($PSCmdlet.ShouldProcess($BrowserType, "Terminating processes")) {
   Write-Warning 'Killing all current brower sessions, hopefully?'
   Get-Process | Where-Object {$_.ProcessName -in $BrowserType} | Stop-Process -Force
+  $Counter = 0
+  do {
+    Start-Sleep -Seconds 1
+    $Counter++
+    $BrowserProcs = Get-Process | Where-Object {$_.ProcessName -in $BrowserType}
+  } until ($BrowserProcs.Count -eq 0 -or $Counter -eq 20)
+  if ($BrowserProcs.Count -ne 0) {
+    Write-Warning "The selected browsers did not terminate in a timely fashion, `nplease close the browsers manually and re-run the script"
+    break
+  }
 }
-$Counter = 0
-do {
-  Start-Sleep -Seconds 1
-  $Counter++
-  $BrowserProcs = Get-Process | Where-Object {$_.ProcessName -in $BrowserType}
-} until ($BrowserProcs.Count -eq 0 -or $Counter -eq 20)
-
-if ($BrowserProcs.Count -ne 0) {
-  Write-Warning "The selected browsers did not terminate in a timely fashion, `nplease close the browsers manually and re-run the script"
-  break
-}
-
 switch ($BrowserType) {
   {$_ -contains 'Chrome'} {
     $ChromePath = $env:LOCALAPPDATA + "\Google\Chrome\User Data\*"
@@ -76,7 +74,7 @@ switch ($BrowserType) {
     else {Write-Warning 'No user data exists for the Firefox browser'}    
   }
   {$_ -contains 'IExplore'} {
-    if ($PSCmdlet.ShouldProcess('IExplore', "Delete User Data")) {
+    if ($PSCmdlet.ShouldProcess('Internet Explorer', "Delete User Data")) {
       Write-Warning 'Attempting to clear user data from Internet Explorer'
       invoke-command -ScriptBlock {RunDll32.exe InetCpl.cpl, ClearMyTracksByProcess 255}
     }
