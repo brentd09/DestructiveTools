@@ -10,7 +10,7 @@
   Remove-BrowserUserData 
   Deletes the user data from Chrome, Firefox and IE (it defaults to all three browsers)
 .EXAMPLE
-  Remove-BrowserUserData -BrowserType IE,Chrome
+  Remove-BrowserUserData -BrowserType IExplore,Chrome
   Deletes the user data from Chrome and IE only
 .EXAMPLE
   Remove-BrowserUserData -BrowserType Chrome
@@ -18,9 +18,10 @@
 .NOTES
   General notes
   Created by: Brent Denny
-  Created on: 9 Aug 2019
+  Created on:  9 Aug 2019
+  Updated on: 12 Aug 2019
 #>
-[CmdletBinding(SupportsShouldProcess,ConfirmImpact='High')]
+[CmdletBinding(SupportsShouldProcess,ConfirmImpact='Medium')]
 Param(
   [ValidateSet('Chrome','FireFox','IExplore')]
   [string[]]$BrowserType = @('Chrome','FireFox','IExplore')
@@ -36,8 +37,9 @@ do {
   $Counter++
   $BrowserProcs = Get-Process | Where-Object {$_.ProcessName -in $BrowserType}
 } until ($BrowserProcs.Count -eq 0 -or $Counter -eq 20)
+
 if ($BrowserProcs.Count -ne 0) {
-  Write-Warning 'The selected browsers did not terminate in a timely fashion, please close them manually and re-run the script'
+  Write-Warning "The selected browsers did not terminate in a timely fashion, `nplease close the browsers manually and re-run the script"
   break
 }
 
@@ -45,23 +47,29 @@ switch ($BrowserType) {
   {$_ -contains 'Chrome'} {
     Write-Warning 'Attempting to clear user data from Chrome'
     $ChromePath = $env:LOCALAPPDATA + "\Google\Chrome\User Data\*"
-    try {
-      if ($PSCmdlet.ShouldProcess('Chrome', "Delete User Data")) {
-        Remove-Item -Path $ChromePath -Recurse -Force -ErrorAction stop}
-      }
-    catch {Write-Warning 'Cannot delete the Chrome user data'}
+    if (Test-Path $ChromePath) {
+      try {
+        if ($PSCmdlet.ShouldProcess('Chrome', "Delete User Data")) {
+          Remove-Item -Path $ChromePath -Recurse -Force -ErrorAction stop}
+        }
+      catch {Write-Warning 'Cannot delete the Chrome user data'}
+    }
+    else {Write-Warning 'No user data exists for the Chrome browser'}
   }
   {$_ -contains 'Firefox'}  {
     Write-Warning 'Attempting to clear user data from Chrome Firefox'
-    $FirefoxProfileFolders = (Get-ChildItem $env:APPDATA\Mozilla\Firefox\Profiles\ -Directory).FullName
-    Try {
-      if ($PSCmdlet.ShouldProcess('Firefox', "Delete User Data")) {
-        foreach ($ProfDir in $FirefoxProfileFolders) {
-          Remove-Item -Recurse -Force -Path $ProfDir\* -ErrorAction stop
+    if (Test-Path '$env:APPDATA\Mozilla\Firefox\Profiles\') {
+      $FirefoxProfileFolders = (Get-ChildItem $env:APPDATA\Mozilla\Firefox\Profiles\ -Directory).FullName
+      Try {
+        if ($PSCmdlet.ShouldProcess('Firefox', "Delete User Data")) {
+          foreach ($ProfDir in $FirefoxProfileFolders) {
+            Remove-Item -Recurse -Force -Path $ProfDir\* -ErrorAction stop
+          }
         }
       }
+      Catch {Write-Warning 'Cannot delete the Firefox user data'}
     }
-    Catch {Write-Warning 'Cannot delete the Firefox user data'}
+    else {Write-Warning 'No user data exists for the Firefox browser'}    
   }
   {$_ -contains 'IExplore'} {
     Write-Warning 'Attempting to clear user data from Internet Explorer'
