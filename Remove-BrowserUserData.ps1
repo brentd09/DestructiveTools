@@ -27,9 +27,9 @@ Param(
   [ValidateSet('Chrome','FireFox','IExplore')]
   [string[]]$BrowserType = @('Chrome','FireFox','IExplore')
 )
-Clear-Host
-Write-Warning 'Killing all current brower sessions, hopefully?'
+Write-host "`n`n`n"
 if ($PSCmdlet.ShouldProcess($BrowserType, "Terminating processes")) {
+  Write-Warning 'Killing all current brower sessions, hopefully?'
   Get-Process | Where-Object {$_.ProcessName -in $BrowserType} | Stop-Process -Force
 }
 $Counter = 0
@@ -46,11 +46,11 @@ if ($BrowserProcs.Count -ne 0) {
 
 switch ($BrowserType) {
   {$_ -contains 'Chrome'} {
-    Write-Warning 'Attempting to clear user data from Chrome'
     $ChromePath = $env:LOCALAPPDATA + "\Google\Chrome\User Data\*"
     if (Test-Path ($env:LOCALAPPDATA + "\Google\Chrome\User Data")) {
       try {
         if ($PSCmdlet.ShouldProcess('Chrome', "Delete User Data")) {
+          Write-Warning 'Attempting to clear user data from Chrome'
           Remove-Item -Path $ChromePath -Recurse -Force -ErrorAction stop}
         }
       catch {Write-Warning 'Cannot delete the Chrome user data'}
@@ -58,11 +58,11 @@ switch ($BrowserType) {
     else {Write-Warning 'No user data exists for the Chrome browser'}
   }
   {$_ -contains 'Firefox'}  {
-    Write-Warning 'Attempting to clear user data from Chrome Firefox'
     if (Test-Path $env:APPDATA\Mozilla\Firefox\Profiles) {
       $FirefoxProfileFolders = (Get-ChildItem $env:APPDATA\Mozilla\Firefox\Profiles\ -Directory).FullName
       Try {
         if ($PSCmdlet.ShouldProcess('Firefox', "Delete User Data")) {
+          Write-Warning 'Attempting to clear user data from Chrome Firefox'
           foreach ($ProfDir in $FirefoxProfileFolders) {
             Remove-Item -Recurse -Force -Path $ProfDir\* -ErrorAction stop
           }
@@ -73,8 +73,8 @@ switch ($BrowserType) {
     else {Write-Warning 'No user data exists for the Firefox browser'}    
   }
   {$_ -contains 'IExplore'} {
-    Write-Warning 'Attempting to clear user data from Internet Explorer'
     if ($PSCmdlet.ShouldProcess('IExplore', "Delete User Data")) {
+      Write-Warning 'Attempting to clear user data from Internet Explorer'
       invoke-command -ScriptBlock {RunDll32.exe InetCpl.cpl, ClearMyTracksByProcess 255}
     }
   }
