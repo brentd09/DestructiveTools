@@ -58,7 +58,7 @@ switch ($BrowserType) {
   }
   {$_ -contains 'Firefox'}  {
     Write-Warning 'Attempting to clear user data from Chrome Firefox'
-    if (Test-Path '$env:APPDATA\Mozilla\Firefox\Profiles') {
+    if (Test-Path "$($env:APPDATA)\Mozilla\Firefox\Profiles") {
       $FirefoxProfileFolders = (Get-ChildItem $env:APPDATA\Mozilla\Firefox\Profiles\ -Directory).FullName
       Try {
         if ($PSCmdlet.ShouldProcess('Firefox', "Delete User Data")) {
