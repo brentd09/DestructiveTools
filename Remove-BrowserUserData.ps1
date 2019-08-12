@@ -2,13 +2,14 @@
 .SYNOPSIS
   This will remove internet browers user data
 .DESCRIPTION
-  This script removes all of the user data stored by the browser, It first needs
+  This script removes all of the user data stored by the browser/s, It first needs
   to stop all of the current browser processes before it can remove the user data.
   It will then attempt to remove all of the user data from the chosen browser/s.
-  This script will choose all three browsers if none are chosen from the parameter.
+  This script will choose all three browsers if none are chosen from the BrowserType
+  parameter.
 .EXAMPLE
   Remove-BrowserUserData 
-  Deletes the user data from Chrome, Firefox and IE (it defaults to all three browsers)
+  Deletes the user data from Chrome, Firefox and IE (the default targets all three browsers)
 .EXAMPLE
   Remove-BrowserUserData -BrowserType IExplore,Chrome
   Deletes the user data from Chrome and IE only
