@@ -31,7 +31,7 @@ Param(
   [string[]]$BrowserType = @('Chrome','FireFox','IExplore')
 )
 Write-host "`n`n`n"
-if ($PSCmdlet.ShouldProcess($BrowserType, "Terminating processes")) {
+if ($PSCmdlet.ShouldProcess(($BrowserType -join ' and '), "Terminating processes")) {
   Write-Warning 'Killing all current brower sessions, hopefully?'
   Get-Process | Where-Object {$_.ProcessName -in $BrowserType} | Stop-Process -Force
   $Counter = 0
