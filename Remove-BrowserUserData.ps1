@@ -47,31 +47,32 @@ if ($PSCmdlet.ShouldProcess($BrowserType, "Terminating processes")) {
 }
 switch ($BrowserType) {
   {$_ -contains 'Chrome'} {
-    $ChromePath = $env:LOCALAPPDATA + "\Google\Chrome\User Data\*"
-    if (Test-Path ($env:LOCALAPPDATA + "\Google\Chrome\User Data")) {
-      try {
-        if ($PSCmdlet.ShouldProcess('Chrome', "Delete User Data")) {
+    if ($PSCmdlet.ShouldProcess('Chrome', "Delete User Data")) {
+      $ChromePath = $env:LOCALAPPDATA + "\Google\Chrome\User Data\*"
+      if (Test-Path ($env:LOCALAPPDATA + "\Google\Chrome\User Data")) {
+        try {
           Write-Warning 'Attempting to clear user data from Chrome'
-          Remove-Item -Path $ChromePath -Recurse -Force -ErrorAction stop}
+          Remove-Item -Path $ChromePath -Recurse -Force -ErrorAction stop
         }
-      catch {Write-Warning 'Cannot delete the Chrome user data'}
+        catch {Write-Warning 'Cannot delete the Chrome user data'}
+      }
+      else {Write-Warning 'No user data exists for the Chrome browser'}
     }
-    else {Write-Warning 'No user data exists for the Chrome browser'}
   }
   {$_ -contains 'Firefox'}  {
-    if (Test-Path $env:APPDATA\Mozilla\Firefox\Profiles) {
-      $FirefoxProfileFolders = (Get-ChildItem $env:APPDATA\Mozilla\Firefox\Profiles\ -Directory).FullName
-      Try {
-        if ($PSCmdlet.ShouldProcess('Firefox', "Delete User Data")) {
+    if ($PSCmdlet.ShouldProcess('Firefox', "Delete User Data")) {
+      if (Test-Path $env:APPDATA\Mozilla\Firefox\Profiles) {
+        $FirefoxProfileFolders = (Get-ChildItem $env:APPDATA\Mozilla\Firefox\Profiles\ -Directory).FullName
+        Try {
           Write-Warning 'Attempting to clear user data from Chrome Firefox'
           foreach ($ProfDir in $FirefoxProfileFolders) {
             Remove-Item -Recurse -Force -Path $ProfDir\* -ErrorAction stop
           }
         }
+        Catch {Write-Warning 'Cannot delete the Firefox user data'}
       }
-      Catch {Write-Warning 'Cannot delete the Firefox user data'}
+      else {Write-Warning 'No user data exists for the Firefox browser'}    
     }
-    else {Write-Warning 'No user data exists for the Firefox browser'}    
   }
   {$_ -contains 'IExplore'} {
     if ($PSCmdlet.ShouldProcess('Internet Explorer', "Delete User Data")) {
