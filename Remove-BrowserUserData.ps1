@@ -25,7 +25,7 @@
   Created on:  9 Aug 2019
   Updated on: 12 Aug 2019
 #>
-[CmdletBinding(SupportsShouldProcess,ConfirmImpact='Medium')]
+[CmdletBinding(SupportsShouldProcess=$true,ConfirmImpact='Medium')]
 Param(
   [ValidateSet('Chrome','FireFox','IExplore')]
   [string[]]$BrowserType = @('Chrome','FireFox','IExplore')
